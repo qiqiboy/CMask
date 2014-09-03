@@ -64,6 +64,7 @@
                 case 'touchmove':
                 case 'pointermove':
                     if(this.moving){
+                        ev.preventDefault();
                         this.fire('move',x,y);
                     }
                     break;
