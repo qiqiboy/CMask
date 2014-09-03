@@ -59,6 +59,7 @@ html,body{
         });
         /* 绑定涂抹结束事件，当清除范围大于60%时清除整个遮罩 */
         mask.on('end',function(){
+            per.innerHTML=(this.percent*100).toFixed(2)+'%';
             if(this.percent>.6){
                 mask.destroy();
             }
