@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Canvas Mask</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<style type="text/css">
+body,div,canvas,img{
+    margin:0;
+    padding:0;
+    border:0;
+}
+html,body{
+    height:100%;
+}
+#wrap{
+    min-height:100%;
+    position:relative;
+}
+#wrap canvas,
+#wrap img{
+    position:absolute;
+    top:0;
+    left:0;
+    height:100%;
+    width:100%;
+}
+#ctl{
+    position:absolute;
+    bottom:30px;
+    text-align:center;
+    z-index:1;
+    left:50%;
+    margin-left:-100px;
+    width:200px;
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+    <img src="images/img.jpg" />
+    <div id="ctl">
+        <button onclick="mask.destroy();">清除所有</button>
+        <button id="percent">0%</button>
+    </div>
+</div>
+	<script type="text/javascript" src="src/cmask.js"></script>
+    <script>
+        var mask=new CMask(),
+            per=document.querySelector('#percent');
+        /* 将遮罩canvas对象放置到页面上，并初始化遮罩样式（纯色或者图片等，自己实现） */
+        document.querySelector('#wrap').appendChild(mask.canvas);
+        mask.ctx.fillStyle='grey';
+        mask.ctx.fillRect(0,0,mask.canvas.width,mask.canvas.height);
+        /* 绑定涂抹结束事件，当清除范围大于60%时清除整个遮罩 */
+        mask.on('end',function(){
+            per.innerHTML=(this.percent*100).toFixed(2)+'%';
+            if(this.percent>.6){
+                mask.destroy();
+            }
+        });
+    </script>
+</body>
+</html>
