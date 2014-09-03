@@ -37,8 +37,8 @@ mask.on('end',function(){
 });
 
 // @method
-mask.destroy(); 以动画方式清除整个蒙版遮罩
-mask.getPercent(); 获取已清理区域占比
+mask.destroy(); //以动画方式清除整个蒙版遮罩
+mask.getPercent(); //获取已清理区域占比
 
 ````
 
