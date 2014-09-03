@@ -53,9 +53,12 @@ html,body{
         document.querySelector('#wrap').appendChild(mask.canvas);
         mask.ctx.fillStyle='grey';
         mask.ctx.fillRect(0,0,mask.canvas.width,mask.canvas.height);
+        /* 绑定移动事件 */
+        mask.on('move',function(){
+            per.innerHTML=(this.getPercent()*100).toFixed(2)+'%';
+        });
         /* 绑定涂抹结束事件，当清除范围大于60%时清除整个遮罩 */
         mask.on('end',function(){
-            per.innerHTML=(this.percent*100).toFixed(2)+'%';
             if(this.percent>.6){
                 mask.destroy();
             }
