@@ -5,6 +5,15 @@
 ;
 (function(ROOT, struct, undefined){
 	"use strict";
+
+    if(typeof Function.prototype.bind!='function'){
+        Function.prototype.bind=function(obj){
+            var self=this;
+            return function(){
+                return self.apply(obj,arguments)
+            }
+        }
+    }
     
     struct.prototype={
         constructor:struct,

@@ -25,17 +25,20 @@ document.body.appendChild(mask.canvas); //将画布放到页面中，然后可�
 mask.on('start',function(){
 	console.log('开始涂抹了');
 });
-mask.on('start',function(){
+mask.on('move',function(){
 	console.log('正在涂抹');
 });
 mask.on('end',function(){
 	console.log('涂抹结束');
+	if(this.percent>0.8){//清除区域大于80%
+		this.destroy();
+		//其它操作
+	}
 });
 
 // @method
-// destroy 以动画方式清除整个蒙版遮罩
-// getPercent 获取已清理区域占比
-
+mask.destroy(); 以动画方式清除整个蒙版遮罩
+mask.getPercent(); 获取已清理区域占比
 
 ````
 
