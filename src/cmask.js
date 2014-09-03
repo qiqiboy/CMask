@@ -14,6 +14,10 @@
             }
         }
     }
+
+    var evstr=ROOT.navigator.pointerEnabled ? "pointerdown pointermove pointerup pointercancel" :
+            ("createTouch" in document) || ('ontouchstart' in window) ? "touchstart touchmove touchend touchcancel" :
+            "mousedown mousemove mouseup";
     
     struct.prototype={
         constructor:struct,
@@ -26,7 +30,7 @@
             this.canvas.height=height||400;
             this.lineWidth=lineWidth||20;
 
-            "mousedown mousemove mouseup touchstart touchmove touchend touchcancel pointerdown pointermove pointerup pointercancel".split(" ").forEach(function(ev){
+            evstr.split(" ").forEach(function(ev){
                 this.canvas.addEventListener(ev, this, false);
             }.bind(this));
 
