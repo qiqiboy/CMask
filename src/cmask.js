@@ -15,8 +15,8 @@
         }
     }
 
-    var evstr=ROOT.navigator.pointerEnabled ? "pointerdown pointermove pointerup pointercancel" :
-            ("createTouch" in document) || ('ontouchstart' in window) ? "touchstart touchmove touchend touchcancel" :
+    var evstr='PointerEvent' in ROOT ? "pointerdown pointermove pointerup pointercancel" :
+            "createTouch" in ROOT.document || 'ontouchstart' in ROOT ? "touchstart touchmove touchend touchcancel" :
             "mousedown mousemove mouseup";
     
     struct.prototype={
