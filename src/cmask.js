@@ -153,7 +153,7 @@
     
 })(window, function(width,height,lineWidth){
     if(!(this instanceof arguments.callee)){
-		return new arguments.callee(width,height,lineWidth);
-	}
+        return new arguments.callee(width,height,lineWidth);
+    }
     this.init(width,height,lineWidth);
 });
