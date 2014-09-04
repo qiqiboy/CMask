@@ -4,7 +4,7 @@
  */
 ;
 (function(ROOT, struct, undefined){
-	"use strict";
+    "use strict";
 
     if(typeof Function.prototype.bind!='function'){
         Function.prototype.bind=function(obj){
