@@ -26,6 +26,7 @@
             this.events={};
             this.canvas=document.createElement('canvas');
             this.ctx=this.canvas.getContext('2d');
+            this.canvas.className='cmask';
             this.canvas.width=width||300;
             this.canvas.height=height||400;
             this.lineWidth=lineWidth||20;
