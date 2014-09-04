@@ -1,7 +1,7 @@
 CMask
 =====
 
-javascript涂抹、刮奖效果组件，canvas蒙版
+javascript涂抹、刮奖scratch效果组件，Scratch Pad
 
 ## 如何使用
 ```javascript
