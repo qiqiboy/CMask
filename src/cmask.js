@@ -34,11 +34,28 @@
             evstr.split(" ").forEach(function(ev){
                 this.canvas.addEventListener(ev, this, false);
             }.bind(this));
+            
+            var _x,_y;
 
             this.on({
-                start:this.clear,
-                move:this.clear,
-                end:this.getPercent
+                start:function(x,y){
+                    _x=x;_y=y;
+                    this.clear(x,y);
+                },
+                move:function(x,y){
+                    var w=this.lineWidth/4,
+                        z=parseInt(Math.sqrt(Math.pow(x-_x,2)+Math.pow(y-_y,2))),
+                        off=z;
+                    while(off>0){
+                        this.clear(x-off/z*(x-_x),y-off/z*(y-_y));
+                        off-=w;
+                    }
+                    _x=x;_y=y;
+                },
+                end:function(){
+                    _x=_y=null;
+                    this.getPercent();
+                }
             });
         },
         handleEvent:function(ev){
@@ -120,13 +137,13 @@
             var ctx=this.ctx,
                 gdt;
             w=w||this.lineWidth;
-            gdt=ctx.createRadialGradient(x,y,w/3,x,y,w);
+            gdt=ctx.createRadialGradient(x,y,0,x,y,w/2);
             gdt.addColorStop(0,'rgba(0, 0, 0, 1)');
             gdt.addColorStop(1,'rgba(255, 255, 255, 0)');
             ctx.fillStyle=gdt;
             ctx.globalCompositeOperation='destination-out';
             ctx.beginPath();
-            ctx.arc(x,y,w,0,Math.PI*2,false);
+            ctx.arc(x,y,w/2,0,Math.PI*2,false);
             ctx.closePath();
             ctx.fill();
         },
@@ -138,7 +155,7 @@
                 ani=function(){
                     var offset=Date.now()-start;
                     if(offset<duration){
-                        this.clear(width/2,height/2,offset/duration*Math.max(width,height));
+                        this.clear(width/2,height/2,offset/duration*Math.max(width,height)*2);
                         setTimeout(ani.bind(this),30);
                     }else{
                         this.canvas.parentNode.removeChild(this.canvas);
