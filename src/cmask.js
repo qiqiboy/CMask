@@ -43,7 +43,7 @@
                 },
                 move:function(x,y){
                     var w=this.lineWidth/4,
-                        z=parseInt(Math.sqrt(Math.pow(x-_x,2)+Math.pow(y-_y,2))),
+                        z=Math.sqrt(Math.pow(x-_x,2)+Math.pow(y-_y,2)),
                         off=z;
                     while(off>0){
                         this.clear(x-off/z*(x-_x),y-off/z*(y-_y));
