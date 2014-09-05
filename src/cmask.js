@@ -40,7 +40,6 @@
             this.on({
                 start:function(x,y){
                     _x=x;_y=y;
-                    this.clear(x,y);
                 },
                 move:function(x,y){
                     var w=this.lineWidth/4,
