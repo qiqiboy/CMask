@@ -120,8 +120,8 @@
             var ctx=this.ctx,
                 gdt;
             w=w||this.lineWidth;
-            gdt=ctx.createRadialGradient(x,y,0,x,y,w);
-            gdt.addColorStop(0,'rgba(0, 0, 0, .8)');
+            gdt=ctx.createRadialGradient(x,y,w/3,x,y,w);
+            gdt.addColorStop(0,'rgba(0, 0, 0, 1)');
             gdt.addColorStop(1,'rgba(255, 255, 255, 0)');
             ctx.fillStyle=gdt;
             ctx.globalCompositeOperation='destination-out';
