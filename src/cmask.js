@@ -130,7 +130,7 @@
                 }
             }
             
-            return this.percent=(clen/length*4).toFixed(4);
+            return this.percent=parseFloat((clen/length*4).toFixed(4));
         },
         clear:function(x,y,w){
             var ctx=this.ctx,
