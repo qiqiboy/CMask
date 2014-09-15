@@ -15,9 +15,19 @@
         }
     }
 
-    var evstr='PointerEvent' in ROOT ? "pointerdown pointermove pointerup pointercancel" :
-            "createTouch" in ROOT.document || 'ontouchstart' in ROOT ? "touchstart touchmove touchend touchcancel" :
-            "mousedown mousemove mouseup";
+    var evstr='PointerEvent' in ROOT ?
+            "pointerdown pointermove pointerup pointercancel" :
+            "createTouch" in ROOT.document || 'ontouchstart' in ROOT ?
+            "touchstart touchmove touchend touchcancel" :
+            "mousedown mousemove mouseup",
+
+        nextFrame=ROOT.requestAnimationFrame ||
+            ROOT.webkitRequestAnimationFrame ||
+            ROOT.MozRequestAnimationFrame ||
+            ROOT.msRequestAnimationFrame ||
+            function(callback){
+                return setTimeout(callback,30);
+            };
     
     struct.prototype={
         constructor:struct,
@@ -155,7 +165,7 @@
                     var offset=Date.now()-start;
                     if(offset<duration){
                         this.clear(width/2,height/2,offset/duration*Math.max(width,height)*2);
-                        setTimeout(ani.bind(this),30);
+                        nextFrame(ani.bind(this));
                     }else{
                         this.canvas.parentNode.removeChild(this.canvas);
                     }
