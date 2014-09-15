@@ -23,7 +23,7 @@
 
         nextFrame=ROOT.requestAnimationFrame ||
             ROOT.webkitRequestAnimationFrame ||
-            ROOT.MozRequestAnimationFrame ||
+            ROOT.mozRequestAnimationFrame ||
             ROOT.msRequestAnimationFrame ||
             function(callback){
                 return setTimeout(callback,30);
