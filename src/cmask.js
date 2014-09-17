@@ -31,15 +31,18 @@
     
     struct.prototype={
         constructor:struct,
-        percent:0,
         init:function(width,height,lineWidth){
             this.events={};
             this.canvas=document.createElement('canvas');
             this.ctx=this.canvas.getContext('2d');
             this.canvas.className='cmask';
-            this.canvas.width=width||300;
-            this.canvas.height=height||400;
+
+            this.width=width||300;
+            this.height=height||400;
             this.lineWidth=lineWidth||20;
+            
+            this.ctx.fillStyle='grey';
+            this.ctx.fillRect(0,0,this.width,this.height);
 
             evstr.split(" ").forEach(function(ev){
                 this.canvas.addEventListener(ev, this, false);
@@ -63,7 +66,6 @@
                 },
                 end:function(){
                     _x=_y=null;
-                    this.getPercent();
                 }
             });
         },
@@ -140,7 +142,7 @@
                 }
             }
             
-            return this.percent=parseFloat((clen/length*4).toFixed(4));
+            return parseFloat((clen/length*4).toFixed(4));
         },
         clear:function(x,y,w){
             var ctx=this.ctx,
@@ -159,8 +161,8 @@
         destroy:function(){
             var duration=400,
                 start=Date.now(),
-                width=this.canvas.width,
-                height=this.canvas.height,
+                width=this.width,
+                height=this.height,
                 ani=function(){
                     var offset=Date.now()-start;
                     if(offset<duration){
@@ -173,6 +175,29 @@
 
             ani.call(this);
         }
+    }
+
+    if(typeof [].forEach=='function'){
+        
+        "width height".split(" ").forEach(function(prop){
+            Object.defineProperty(struct.prototype,prop,{
+                get:function(){
+                    return this.canvas[prop];
+                },
+                set:function(value){
+                    this.canvas[prop]=value;
+                },
+                enumerable:true
+            });
+        });
+
+        Object.defineProperty(struct.prototype,'percent',{
+            get:function(){
+                return this.getPercent();
+            },
+            enumerable:true
+        })
+
     }
 
     ROOT.CMask=struct;
