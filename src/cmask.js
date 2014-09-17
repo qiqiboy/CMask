@@ -83,8 +83,8 @@
             x-=rect.left;
             y-=rect.top;
 
-            x*=this.canvas.width/rect.width;
-            y*=this.canvas.height/rect.height;
+            x*=this.width/rect.width;
+            y*=this.height/rect.height;
 
             switch(ev.type.toLowerCase()){
                 case 'mousedown':
@@ -133,7 +133,7 @@
             }.bind(this));
         },
         getPercent:function() {
-            var pixles=this.ctx.getImageData(0,0,this.canvas.width,this.canvas.height).data,
+            var pixles=this.ctx.getImageData(0,0,this.width,this.height).data,
                 length=pixles.length,
                 i=0,clen=0;
             for(;i<length;i+=4){
