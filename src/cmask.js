@@ -177,7 +177,7 @@
         }
     }
 
-    if(typeof [].forEach=='function'){
+    if(typeof Object.defineProperties=='function'){
         
         "width height".split(" ").forEach(function(prop){
             Object.defineProperty(struct.prototype,prop,{
