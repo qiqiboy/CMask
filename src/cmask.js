@@ -123,6 +123,7 @@
                 this.events[ev]=[];
             }
             this.events[ev].push(callback);
+            return this;
         },
         fire:function(ev){
             var args=[].slice.call(arguments,1);
@@ -131,6 +132,7 @@
                     callback.apply(this,args);
                 }
             }.bind(this));
+            return this;
         },
         getPercent:function() {
             var pixles=this.ctx.getImageData(0,0,this.width,this.height).data,
@@ -157,6 +159,7 @@
             ctx.arc(x,y,w/2,0,Math.PI*2,false);
             ctx.closePath();
             ctx.fill();
+            return this;
         },
         destroy:function(){
             var duration=400,
@@ -174,6 +177,7 @@
                 }
 
             ani.call(this);
+            return this;
         }
     }
 
