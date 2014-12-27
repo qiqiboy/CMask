@@ -118,11 +118,12 @@
                 return Object.keys(ev).forEach(function(_e){
                     this.on(_e,ev[_e]);
                 }.bind(this));
+            }else{
+                if(!this.events[ev]){
+                    this.events[ev]=[];
+                }
+                this.events[ev].push(callback);
             }
-            if(!this.events[ev]){
-                this.events[ev]=[];
-            }
-            this.events[ev].push(callback);
             return this;
         },
         fire:function(ev){
