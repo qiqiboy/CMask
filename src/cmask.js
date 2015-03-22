@@ -115,7 +115,7 @@
         },
         on:function(ev,callback){
             if(typeof ev == 'object'){
-                return Object.keys(ev).forEach(function(_e){
+                Object.keys(ev).forEach(function(_e){
                     this.on(_e,ev[_e]);
                 }.bind(this));
             }else{
