@@ -207,9 +207,9 @@
 
     ROOT.CMask=struct;
     
-})(window, function self(width,height,lineWidth){
-    if(!(this instanceof self)){
-        return new self(width,height,lineWidth);
+})(window, function(width,height,lineWidth){
+    if(!(this instanceof arguments.callee)){
+        return new arguments.callee(width,height,lineWidth);
     }
     this.init(width,height,lineWidth);
 });
