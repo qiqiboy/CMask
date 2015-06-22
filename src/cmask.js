@@ -6,29 +6,90 @@
 (function(ROOT, struct, undefined){
     "use strict";
 
-    if(typeof Function.prototype.bind!='function'){
-        Function.prototype.bind=function(obj){
-            var self=this;
-            return function(){
-                return self.apply(obj,arguments);
-            }
-        }
-    }
-
-    var evstr='PointerEvent' in ROOT ?
-            "pointerdown pointermove pointerup pointercancel" :
-            "createTouch" in ROOT.document || 'ontouchstart' in ROOT ?
-            "touchstart touchmove touchend touchcancel" :
-            "mousedown mousemove mouseup",
-
+    var lastTime=0,
         nextFrame=ROOT.requestAnimationFrame ||
             ROOT.webkitRequestAnimationFrame ||
             ROOT.mozRequestAnimationFrame ||
             ROOT.msRequestAnimationFrame ||
             function(callback){
-                return setTimeout(callback,30);
-            };
-    
+                var currTime=+new Date,
+                    delay=Math.max(1000/60,1000/60-(currTime-lastTime));
+                lastTime=currTime+delay;
+                return setTimeout(callback,delay);
+            },
+        states={
+            start:1,
+            down:1,
+            move:2,
+            end:3,
+            up:3,
+            cancel:3
+        },
+        evs=[],
+        slice=[].slice,
+        event2type={},
+        event2code={},
+        POINTERS={},
+        dpr=ROOT.devicePixelRatio||1;
+
+    typeof [].forEach=='function' && "mouse touch pointer MSPointer-".split(" ").forEach(function(prefix){
+        var _prefix=/pointer/i.test(prefix)?'pointer':prefix;
+        Object.keys(states).forEach(function(endfix){
+            var code=states[endfix],
+                ev=camelCase(prefix+endfix);
+            evs.push(ev);
+            POINTERS[_prefix]={};
+            event2type[ev.toLowerCase()]=_prefix;
+            event2code[ev.toLowerCase()]=code;
+        });
+    });
+
+    function camelCase(str){
+        return (str+'').replace(/-([a-z]|[0-9])/ig, function(all,letter){
+            return (letter+'').toUpperCase();
+        });
+    }
+
+    function filterEvent(oldEvent){
+         var ev={},
+             eventtype,
+             pointers,
+             pointer;
+
+        ev.oldEvent=oldEvent;
+        ev.type=oldEvent.type.toLowerCase();
+        ev.eventType=event2type[ev.type]||ev.type;
+        ev.eventCode=event2code[ev.type]||0;
+        ev.preventDefault=function(){
+            oldEvent.preventDefault();
+        }
+
+        pointers=POINTERS[ev.eventType];
+        switch(ev.eventType){
+            case 'mouse':
+            case 'pointer':
+                var id=oldEvent.pointerId||0;
+                ev.eventCode==3?delete pointers[id]:pointers[id]=oldEvent;
+                ev.changedPointers=[{id:id,ev:oldEvent}];
+                break;
+            case 'touch':
+                ev.changedPointers=slice.call(oldEvent.changedTouches).map(function(pointer){
+                    return {id:pointer.identifier,ev:pointer};
+                });
+                POINTERS[ev.eventType]=pointers=slice.call(oldEvent.touches);
+                break;
+        }
+
+        if(pointer=pointers[Object.keys(pointers)[0]]){
+            ev.clientX=pointer.clientX;
+            ev.clientY=pointer.clientY;
+        }
+
+        ev.length=Object.keys(pointers).length;
+
+        return ev;
+    }
+
     struct.prototype={
         constructor:struct,
         init:function(width,height,lineWidth){
@@ -44,7 +105,7 @@
             this.ctx.fillStyle='grey';
             this.ctx.fillRect(0,0,this.width,this.height);
 
-            evstr.split(" ").forEach(function(ev){
+            evs.forEach(function(ev){
                 this.canvas.addEventListener(ev, this, false);
             }.bind(this));
             
@@ -69,46 +130,32 @@
                 }
             });
         },
-        handleEvent:function(ev){
-            var x=ev.clientX||0,
-                y=ev.clientY||0,
-                rect=this.canvas.getBoundingClientRect();
-            if(ev.touches && ev.touches.length){
-                if(ev.touches.length>1){//多指触摸不作响应
-                    return;
-                }
-                x=ev.touches.item(0).clientX;
-                y=ev.touches.item(0).clientY;
-            }
-            x-=rect.left;
-            y-=rect.top;
+        handleEvent:function(oldEvent){
+            var ev=filterEvent(oldEvent),
+                rect=this.canvas.getBoundingClientRect(),
+                isRight=!this.pointerType||this.pointerType==ev.eventType;
 
-            x*=this.width/rect.width;
-            y*=this.height/rect.height;
-
-            switch(ev.type.toLowerCase()){
-                case 'mousedown':
-                case 'touchstart':
-                case 'pointerdown':
-                    this.moving=true;
-                    this.fire('start',x,y);
-                    break;
-                case 'mousemove':
-                case 'touchmove':
-                case 'pointermove':
-                    if(this.moving){
+            switch(ev.eventCode){
+                case 2:
+                    if(isRight&&this.moving){
                         ev.preventDefault();
-                        this.fire('move',x,y);
+                        this.fire('move',(ev.clientX-rect.left)*this.width/rect.width,(ev.clientY-rect.top)*this.height/rect.height);
                     }
                     break;
-                case 'mouseup':
-                case 'touchend':
-                case 'touchcancel':
-                case 'pointerup':
-                case 'pointercancel':
-                    if(this.moving){
-                        delete this.moving;
+                
+                case 1:
+                    if(!this.pointerType){
+                        this.pointerType=ev.eventType;
+                        
+                    }
+                case 3:
+                    if(ev.length==1){
+                        this.fire('start',(ev.clientX-rect.left)*this.width/rect.width,(ev.clientY-rect.top)*this.height/rect.height);
+                        this.moving=true;
+                    }else{
                         this.fire('end');
+                        delete this.moving;
+                        delete this.pointerType;
                     }
                     break;
             }
@@ -187,10 +234,11 @@
         "width height".split(" ").forEach(function(prop){
             Object.defineProperty(struct.prototype,prop,{
                 get:function(){
-                    return this.canvas[prop];
+                    return this.canvas[prop]/dpr;
                 },
                 set:function(value){
-                    this.canvas[prop]=value;
+                    this.canvas[prop]=value*dpr;
+                    this.ctx.scale(dpr,dpr);//retina support
                 },
                 enumerable:true
             });
