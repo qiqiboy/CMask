@@ -145,8 +145,8 @@
                 
                 case 1:
                     if(!this.pointerType){
+                        clearTimeout(this.eventTimer);
                         this.pointerType=ev.eventType;
-                        
                     }
                 case 3:
                     if(ev.length==1){
@@ -156,6 +156,11 @@
                         this.fire('end');
                         delete this.moving;
                         delete this.pointerType;
+                    }
+                    if(!ev.length){
+                        this.eventTimer=setTimeout(function(){
+                            delete this.pointerType;
+                        }.bind(this),30);
                     }
                     break;
             }
