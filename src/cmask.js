@@ -144,13 +144,13 @@
                     break;
                 
                 case 1:
-                    if(!this.pointerType){
-                        this.pointerType=ev.eventType;
-                    }
                 case 3:
                     if(isRight){
                         if(ev.length){
                             clearTimeout(this.eventTimer);
+                            if(!this.pointerType){
+                                this.pointerType=ev.eventType;
+                            }
                             this.fire('start',(ev.clientX-rect.left)*this.width/rect.width,(ev.clientY-rect.top)*this.height/rect.height);
                             this.moving=true;
                         }else if(this.moving){
