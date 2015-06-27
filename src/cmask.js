@@ -133,7 +133,7 @@
         handleEvent:function(oldEvent){
             var ev=filterEvent(oldEvent),
                 rect=this.canvas.getBoundingClientRect(),
-                isRight=!this.pointerType||this.pointerType==ev.eventType;
+                isRight=ev.length<2&&(!this.pointerType||this.pointerType==ev.eventType);
 
             switch(ev.eventCode){
                 case 2:
@@ -148,20 +148,18 @@
                         this.pointerType=ev.eventType;
                     }
                 case 3:
-                    if(ev.length==1){
-                        this.fire('start',(ev.clientX-rect.left)*this.width/rect.width,(ev.clientY-rect.top)*this.height/rect.height);
-                        this.moving=true;
-                    }else{
-                        this.fire('end');
-                        delete this.moving;
-                        delete this.pointerType;
-                    }
-                    if(ev.length){
-                        clearTimeout(this.eventTimer);                        
-                    }else{
-                        this.eventTimer=setTimeout(function(){
-                            delete this.pointerType;
-                        }.bind(this),30);
+                    if(isRight){
+                        if(ev.length){
+                            clearTimeout(this.eventTimer);
+                            this.fire('start',(ev.clientX-rect.left)*this.width/rect.width,(ev.clientY-rect.top)*this.height/rect.height);
+                            this.moving=true;
+                        }else if(this.moving){
+                            this.fire('end');
+                            delete this.moving;
+                            this.eventTimer=setTimeout(function(){
+                                delete this.pointerType;
+                            }.bind(this),30);
+                        }
                     }
                     break;
             }
